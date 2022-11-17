@@ -1,5 +1,8 @@
 
+//Keep track of screens
+var currScene = 1;
 
+//Store Values for each Card Object
 var cardObj = {
     1: {
         cardDisplay: "1",
@@ -59,6 +62,8 @@ var cardObj = {
     },
 };
 
+
+//Colors that cards can have
 var colorList = [color(242, 35, 12), color(0, 0, 0)];
 
 //Khan Button Class
@@ -95,7 +100,7 @@ Button.prototype.handleMouseClick = function() {
 
 
 
-
+//Card object
 var Card = function(face){
     this.x=0;
     this.y=0;
@@ -106,6 +111,8 @@ var Card = function(face){
     
     
     //constructor
+    //When an instance is created values for the card will be randomly Picked
+    //and added to its properties
     var randomCard = round(random(0, 14));
     this.displayValue = cardObj[randomCard].cardDisplay;
     this.value= cardObj[randomCard].cardValue;
@@ -113,13 +120,14 @@ var Card = function(face){
 };
 
 Card.prototype.draw = function() {
-    
+    //dealers second card
     if(this.faceUp){
         fill(237, 26, 26);
         rect(this.x, this.y, this.width, this.height);
         return;
     }
     
+    //Noraml Card
     textAlign(CENTER, LEFT);
     //body
     fill(255, 255, 255);
@@ -140,11 +148,14 @@ var Player = function(){
 };
 
 Player.prototype.drawNewCard = function(f){
+    
+    //make new card, add to players array of active cards
     var newC = new Card(f);
     this.currentCards.push(newC);
     
     //dont add value if card is turned over
     if(!f){
+        //add value of card, and check if bust
         this.currentValue += this.addCardValue(newC);
         this.checkBust();
     }
@@ -152,6 +163,7 @@ Player.prototype.drawNewCard = function(f){
 };
 
 Player.prototype.addCardValue = function(card){
+    //use differnt value for Ace depending on current value 
     if(card.displayValue === "A" && ((this.currentValue + 11) > 21)){
         println("1");
         return card.value[0];
@@ -166,6 +178,7 @@ Player.prototype.addCardValue = function(card){
 };
 
 Player.prototype.displayCards = function(startX){
+    //draw cards in sets of 3
     var offset = 0;
     var offsetY = 100;
     for(var i = 0; i < this.currentCards.length; i++){
@@ -298,6 +311,15 @@ var standBtn = new Button({
 });
 
 
+//Screens
+function splashScreen(){
+    background(77, 135, 59);
+}
+
+function betScreen(){
+    background(136, 166, 240);
+}
+
 //Before logic
 startGame();
 
@@ -307,6 +329,10 @@ mouseClicked = function() {
 };
 
 draw = function() {
+    //Draw Screens
+    //if(currScene === 1)...
+    
+    
     background(237, 197, 237);
     line(200, 0, 200, 400);
     
