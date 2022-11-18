@@ -277,6 +277,7 @@ var Card = function(face){
     var randomCard = round(random(0, 14));
     this.displayValue = cardObj[randomCard].cardDisplay;
     this.value= cardObj[randomCard].cardValue;
+    //test
     
 };
 
