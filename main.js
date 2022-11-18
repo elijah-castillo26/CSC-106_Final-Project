@@ -1,6 +1,167 @@
 
+//Anthony Bitmoji
+var drawBitmojiInitials = function (bitmojiX,bitmojiY,size,adjust) {
+    
+    var x=bitmojiX+200;
+    var y=bitmojiY+100;
+    fill(255, 255, 255);
+    rect(x-size*56/100,y+size*47/100,size*108/100,size*142/140);
+    fill(0, 0, 0);
+    textSize(61/100*size);
+    text("AF",(x-size*36/100)-adjust,(y+size*25/21)-adjust);
+};
+
+//this draws the ear on bitmoji
+
+var drawBitmojiEars = function (bitmojiX,bitmojiY,size){
+    
+    var x=bitmojiX+200;
+    var y=bitmojiY+100;
+    fill(252, 214, 202);
+    ellipse (x-size*50/100,y-size*6/100,size*20/100,size*39/100);
+    ellipse (x+size*50/100,y-size*6/100,size*20/100,size*39/100);
+};
+
+//this draws the hair on bitmoji
+
+var drawBitmojiHair = function (bitmojiX,bitmojiY,size)
+{
+    var x=bitmojiX+200;
+    var y=bitmojiY+100;
+    
+    fill(125, 58, 34);
+    ellipse(x-size*40/100,y-size*40/100,size*13/100,size*20/100);
+    ellipse(x+size*34/100,y-size*47/100,size*13/100,size*13/100);
+    ellipse(x+size*40/100,y-size*40/100,size*13/100,size*20/100);
+    ellipse(x-size*35/100,y-size*38/100,size*21/100,size*20/100);
+};
+
+//this draws the face on bitmoji
+
+var drawBitmojiFace = function (bitmojiX,bitmojiY,size,adjust) {
+    
+    var x=bitmojiX+200;
+    var y=bitmojiY+100;
+    fill(0, 0, 0);
+    ellipse(x,y-size/4,size*3/4,size*11/10);
+    fill(252, 214, 202);
+    ellipse(x,y,size,size*125/100);
+    triangle(x,y+size*5/100,x-size*15/100,y+size*19/100,x+size*12/100,y+size*16/100);
+    fill(222, 71, 122);
+    triangle(x+size*5/100,y+size*48/100,x-size*30/100,y+size*40/100,x+size*30/100,y+size*40/100);
+    fill(0, 0, 0);
+    arc(x,y-size*4/10,size*(70/100),size*32/100,193,344);
+    rect((x-size*25/100)+(adjust*20/43),y+size*22/100,size*53/100,((size*9/100)+adjust*-10/100));
+};
+//this draws the eyes on bitmoji
+
+var drawBitmojiEyes = function (bitmojiX,bitmojiY,size,adjust) {
+    
+    var x = bitmojiX+200;
+    var y = bitmojiY+100;
+    //ellipse(100,100, 30, 30);
+    ellipse(x+size*13/100,y-size*15/100,size*10/100,size*10/100);
+    ellipse(x-size*15/100,y-size*15/100,size*10/100,size*10/100);
+    line(x-size*30/100,y-size*30/100,x-size*5/100,y-size*30/100);
+    line(x,y-size*30/100,x+size*30/100,y-size*30/100);
+};
+
+//this combines the parts of the bitmoji into a single drawbitmoji function that changes x position, y position, and size
+
+function drawBitmojiAnthony(bitmojiX,bitmojiY,size,adjust) {
+    
+    drawBitmojiInitials(bitmojiX+adjust,bitmojiY+adjust,size,adjust);
+    drawBitmojiEars(bitmojiX,bitmojiY,size);
+    drawBitmojiHair(bitmojiX,bitmojiY,size);
+    drawBitmojiFace(bitmojiX,bitmojiY,size,adjust);
+    drawBitmojiEyes(bitmojiX,bitmojiY,size);
+}
+
+
+//Elijah Bitmoji
+function drawUpper(x, y, h){
+    fill(247, 210, 188); // Skin Color
+    ellipse(x - (h / 20), y-(h/50*500), h/20*380, h/20*380); // Head
+    
+    
+    fill(94, 55, 7); // Eye Color
+    ellipse(x-(h/20*80), y-(h/55*600), h/20*30 , h/20*30);
+    ellipse(x+(h/15*50), y-(h/55*600), h/20*30, h/20*30);  // Eyes
+    
+    
+    noFill();
+    stroke(217, 157, 28); //Brow Color
+    arc(x-(h/20*80), y-(h/60*710), h/20*80, h/20*40, -180, 0); //Eye Brow
+    arc(x+(h/20*70), y-(h/60*710), h/20*80, h/20*40, -180, 0); 
+    noStroke();
+    
+    fill(252, 204, 176);
+    stroke(0, 0, 0);
+    arc(x - (h/10), y-(h/38*280), h /18*60, h/20*50, 100, 220); //Nose
+    noStroke();
+    
+    
+    fill(255, 255, 255);
+    arc(x - (h/20), y-(h/20*80), h/10*100, h/8*15, 10, 180); //Mouth
+    
+    fill(255, 214, 89); // Hair
+    ellipse(x+(h/10*80), y-(h/15*200), h/20*80, h/20*140);
+    
+    
+    fill(252, 204, 176);
+    stroke(0, 0, 0);
+    arc(x+(h/35*300), y-(h/20*200), h/20*70, h/20*60, -100, 70); //Ear
+    //arc(153, 150, 20, 20, 110, 280); //Ear
+    noStroke();
+    
+    
+    
+    stroke(0,0,0);
+    fill(79, 78, 78); //Hat Color
+    arc(x+(h/20), y-(h/10*150), h/20*320, h/25*320, -180, 0); //Hat
+    fill(20, 20, 20); //Brim Color
+    quad(x-(h/40*300), y-(h/20*300), x+(h/30*250), y-(h/20*300), x +(h/20), y-(h/20*270), x-(h/20*300), y-(h/20*270)); // Brim
+    noStroke();
+}
+
+
+function drawLower(x, y, h){
+    fill(23, 59, 97); //Shirt Color
+    quad(x-(h/20*200), y+(h/20), x+(h/20*200), y + (h/20), x+(h/20*300), y+(h/20*240), x-(h/20*300), y+(h/20*240)); //Shirt
+    
+    
+    
+    //fill(76, 130, 59); //Should be same as background
+    //triangle(x-(h/50*550), y+(h/20*300), x-(h/40*300), y+(h/20*300), x-(h/20*150), y+(h/20*150)); //Arm Pits
+    
+    //triangle(x+(h/20*150), y+(h/20*300), x+(h/50*530), y+(h/20*300), x+(h/20*160), y+(h/20//*150));
+    
+    
+    fill(255, 255, 255);
+    textSize(h/20*150);
+    text("EC", x-(h/20*100), y+(h/20*170)); //Shirt Text
+    
+}
+
+
+function drawBitmoji(x, y, h){
+    drawUpper(x, y, h);
+    drawLower(x, y, h);
+}
+
+
+
+
+
+
+
+
 //Keep track of screens
-var currScene = 1;
+// 0: Splash Screen
+// 1: Bet Screen
+// 2: Game Screen
+// 3: Reset Screen
+var currScene = 0;
 
 //Store Values for each Card Object
 var cardObj = {
@@ -116,6 +277,7 @@ var Card = function(face){
     var randomCard = round(random(0, 14));
     this.displayValue = cardObj[randomCard].cardDisplay;
     this.value= cardObj[randomCard].cardValue;
+    //test
     
 };
 
@@ -262,10 +424,9 @@ Player.prototype.checkBust = function(){
         this.bust = true;
         
         //players card puts them over 21
-        if(player.bust && !computer.bust){
-            println("Comp Turn");
+
             computerTurn();
-        }
+        
         
     }
 };
@@ -298,7 +459,6 @@ var hitBtn = new Button({
     }
 });
 
-//button objects
 var standBtn = new Button({
     x: 100,
     y: 340,
@@ -310,10 +470,34 @@ var standBtn = new Button({
     }
 });
 
+var startGameBtn = new Button({
+    x: 160,
+    y: 320,
+    width: 80,
+    height: 50,
+    label: "Start",
+    onClick: function() {
+        currScene = 1;
+    }
+});
+
 
 //Screens
 function splashScreen(){
-    background(77, 135, 59);
+    background(76, 130, 59);
+    fill(255, 255, 255);
+    textSize(40);
+    text("Blackjack", 120, 10);
+    textSize(15);
+    text("Goal: Get as close to 21 without going over", 60, 70);
+    
+    //Bitmojis
+    textAlign(LEFT, LEFT);
+    drawBitmoji(100, 200, 4);
+    drawBitmojiAnthony(100, 60, 70, 0);
+    
+    //Button
+    startGameBtn.draw();
 }
 
 function betScreen(){
@@ -326,15 +510,21 @@ startGame();
 mouseClicked = function() {
     hitBtn.handleMouseClick();
     standBtn.handleMouseClick();
+    startGameBtn.handleMouseClick();
 };
 
 draw = function() {
     //Draw Screens
-    //if(currScene === 1)...
+    if(currScene === 0){
+        splashScreen();
+        return;
+    }
     
     
     background(237, 197, 237);
-    line(200, 0, 200, 400);
+    
+    //rect or line?
+    rect(200, 0, 2, 400);
     
     //Text
     fill(0, 0, 0);
@@ -356,9 +546,5 @@ draw = function() {
     standBtn.draw();
 };
 
-
-
-
-    
 
 
