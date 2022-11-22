@@ -164,6 +164,11 @@ var currScene = 0;
 
 //Config
 var afterResultScreen = 1;
+var resultText = "";
+var resultTextColor = color(65, 235, 88);
+var totalBalance = 3500;
+var currentBet = 0;
+var gamesPlayed = 0;
 
 //Store Values for each Card Object
 var cardObj = {
@@ -209,15 +214,15 @@ var cardObj = {
     },
     11: {
         cardDisplay: "J",
-        cardValue: 11
+        cardValue: 10
     },
     12: {
         cardDisplay: "Q",
-        cardValue: 12
+        cardValue: 10
     },
     13: {
         cardDisplay: "K",
-        cardValue: 13
+        cardValue: 10
     },
     14: {
         cardDisplay: "A",
@@ -241,12 +246,19 @@ var Button = function(config) {
 };
 
 Button.prototype.draw = function() {
-    fill(this.color);
-    rect(this.x, this.y, this.width, this.height, 5);
-    fill(0, 0, 0);
-    textSize(19);
-    textAlign(LEFT, TOP);
-    text(this.label, this.x+10, this.y+this.height/4);
+        textAlign(CENTER, CENTER);
+        strokeWeight(2.5);
+        stroke(255);
+        fill(214, 64, 64);
+        rectMode(CENTER);
+        rect(this.x, this.y, this.width, this.height, 4);
+        rectMode(CORNER);
+        strokeWeight(1);
+        fill(0,0,0);
+        textSize(15);
+        fill(255, 255, 255);
+        text(this.label, this.x, this.y);
+        textAlign(LEFT, BASELINE);
 };
 
 Button.prototype.isMouseInside = function() {
@@ -285,10 +297,10 @@ var Card = function(face){
 };
 
 Card.prototype.draw = function() {
-    //dealers second card
+//dealers second card
     if(this.faceUp){
-        fill(237, 26, 26);
-        rect(this.x, this.y, this.width, this.height);
+        fill(235, 40, 40);
+        rect(this.x, this.y, this.width, this.height,5);
         return;
     }
     
@@ -296,13 +308,13 @@ Card.prototype.draw = function() {
     textAlign(CENTER, LEFT);
     //body
     fill(255, 255, 255);
-    rect(this.x, this.y, this.width, this.height);
+    rect(this.x, this.y, this.width, this.height,5);
     
     //value
     fill(this.color);
-    textSize(35);
-    text(this.displayValue, this.x + (this.width/3), this.y+(this.height/1.5));
-    //text(this.display, this.x + (this.width-20), this.y+(this.height-10));
+    textSize(15);
+    text(this.displayValue, this.x +11, this.y+16);
+    text(this.displayValue, this.x+35, this.y+55);
 };
 
 var Player = function(){
@@ -367,6 +379,7 @@ Player.prototype.reset = function(){
   //remove total and card from properties
   this.currentCards = [];
   this.currentValue = 0;
+  this.bust = false;
 };
 
 
@@ -379,26 +392,62 @@ var player = new Player();
 var computer = new Player();
 
 
+function handleGameResult(result){
+    if(result === 1){
+        //win
+        println("WIN");
+        resultText = "You Won";
+        resultTextColor = color(65, 235, 65);
+        
+        //add Bet
+        totalBalance += currentBet;
+        
+        
+    } else if (result === 0){
+        //loss
+         println("LOSS");
+        resultText = "You Lost";
+        resultTextColor = color(235, 23, 23);
+        
+        //Subtract
+        totalBalance -= currentBet;
+    } else if (result === 2){
+        //tie
+         println("TIE");
+        resultText = "You Tied";
+        resultTextColor = color(237, 228, 66);
+        
+        //keep Bet, do nothing
+    }
 
+}
 
 function comparePlayers(){
     
     //check game state, find winner
+    //println("COMPARE");
 
     if (computer.bust  && player.bust){
-        println("Tie Bust Bust");
+        //println("Tie Bust Bust");
+        handleGameResult(2);
+        
     } 
     else if(computer.currentValue === player.currentValue){
         println("Tie Equal");
+        handleGameResult(2);
     }
     else if (computer.bust && !player.bust){
         println("Player Win  CB !PB");
+        handleGameResult(1);
     } else if (player.bust && !computer.bust){
         println("Computer Win PB !CB");
+        handleGameResult(0);
     } else if (player.currentValue > computer.currentValue){
         println("Player Win PV > CV");
+        handleGameResult(1);
     } else if (player.currentValue < computer.currentValue){
         println("Computer Win CV > PV");
+        handleGameResult(0);
     }
     currScene = 3;
     
@@ -430,12 +479,13 @@ function computerTurn(){
 }
 
 Player.prototype.checkBust = function(){
+    //println("CHECK BUST " + this.currentValue);
     if(this.currentValue > 21){
+        //println("BUST TRUE");
         this.bust = true;
         
         //players card puts them over 21
-
-            computerTurn();
+        computerTurn();
         
         
     }
@@ -450,10 +500,10 @@ Player.prototype.checkBust = function(){
 
 //button objects
 var hitBtn = new Button({
-    x: 3,
-    y: 340,
+    x: 40,
+    y: 360,
     width: 60,
-    height: 50,
+    height: 40,
     label: "Hit",
     onClick: function() {
         player.drawNewCard(false);
@@ -461,10 +511,10 @@ var hitBtn = new Button({
 });
 
 var standBtn = new Button({
-    x: 75,
-    y: 340,
+    x: 140,
+    y: 360,
     width: 110,
-    height: 50,
+    height: 40,
     label: "Stand",
     onClick: function() {
         computerTurn();
@@ -499,36 +549,77 @@ function resetGame(){
     player.reset();
     computer.reset();
     
-    
-    currScene = 2;
     initGame();
+    currScene = 2;
     afterResultScreen = 1;
 }
 
 
 
 var startGameBtn = new Button({
-    x: 160,
+    x: 200,
     y: 320,
     width: 80,
     height: 50,
     label: "Start",
     onClick: function() {
-        resetGame();
-        
-        
+        currScene = 1;
     }
 });
 
 var closeBoxBtn = new Button({
-    x: 170,
-    y: 250,
+    x: 200,
+    y: 270,
     width: 50,
     height: 40,
     label: "X",
     color: color(237, 35, 35),
     onClick: function() {
-        afterResultScreen = 0;
+       afterResultScreen = 0;
+    }
+});
+
+//Betting
+
+function chooseBet(betValue){
+    currentBet = betValue;
+    gamesPlayed += 1;
+    resetGame();
+    
+}
+var betBtn250 = new Button({
+    x: 100,
+    y: 140,
+    width: 70,
+    height: 50,
+    label: "$250",
+    color: color(123, 209, 235),
+    onClick: function() {
+        chooseBet(250);
+    }
+});
+
+var betBtn500 = new Button({
+    x: 200,
+    y: 140,
+    width: 70,
+    height: 50,
+    label: "$500",
+    color: color(123, 209, 235),
+    onClick: function() {
+        chooseBet(500);
+    }
+});
+
+var betBtn1000 = new Button({
+    x: 300,
+    y: 140,
+    width: 70,
+    height: 50,
+    label: "$1000",
+    color: color(123, 209, 235),
+    onClick: function() {
+        chooseBet(1000);
     }
 });
 
@@ -536,26 +627,129 @@ var closeBoxBtn = new Button({
 
 
 //Screens
+
+var brick_background = function(x, y, s){
+    
+    noFill();
+    stroke(0, 0, 0, 20);
+    
+    for(var i = 0; i < 600; i += s * 2 + 1)
+    {
+        rect(x + i, y, s * 2, s,6);
+    }
+};
+
 function splashScreen(){
-    background(92, 148, 74);
+        background(120, 120, 120);    for(var i = 0; i < 8; ++i)
+    {
+        brick_background(60, 0 + i * 120, 60);
+    }
+    
+    for(var i = 0; i < 8; ++i)
+    {
+        brick_background(0, 60 + i * 120, 60);
+    }
     fill(255, 255, 255);
     textSize(40);
-    text("Blackjack", 120, 10);
+    text("Blackjack", 120, 50);
     textSize(15);
-    text("Goal: Get as close to 21 without going over", 60, 70);
+    text("Goal: Get as close to 21 without going over", 55, 85);
     
     //Bitmojis
     textAlign(LEFT, LEFT);
+        stroke(0,0,0);
     drawBitmoji(100, 200, 4);
+        stroke(0,0,0);
     drawBitmojiAnthony(100, 60, 70, 0);
     
     //Button
     startGameBtn.draw();
+    
+    
 }
 
 
+
 function betScreen(){
-    background(136, 166, 240);
+    background(120, 120, 120);
+    fill(255, 255, 255);
+    textSize(20);
+    text("Choose how much you want to bet", 50, 30);
+    text("Current Balance: $" + totalBalance, 100, 70);
+    
+    betBtn250.draw();
+    betBtn500.draw();
+    betBtn1000.draw();
+}
+
+function gameScreen(){
+    // println("2");
+    background(92, 148, 74);
+    
+    
+    //rect or line?
+    rect(200, 0, 2, 400);
+    
+    //Text
+    fill(0, 0, 0);
+    textSize(30);
+    text("You", 80, 35);
+    text("Computer", 240, 35);
+    
+    //Current Value of cards
+    textSize(20);
+    text("Value: " + player.currentValue, 60, 60);
+    text("Value: " + computer.currentValue, 260, 60);
+    
+    //Cards
+    computer.displayCards(220);
+    player.displayCards(20);
+    
+    if (currScene === 3){
+        //display after so its drawn on top
+
+        //change labels
+        hitBtn.label = "End";
+        standBtn.label = "Play Again";
+        
+        //change functions
+        //end game
+        hitBtn.onClick = function(){
+            currScene = 0;
+            //reset betting
+            totalBalance = 3500;
+            gamesPlayed = 0;
+        };
+        //play again
+        standBtn.onClick = function(){
+            currScene = 1;
+        };
+        
+        
+        if(afterResultScreen === 1){
+            //Outcome
+            fill(0, 0, 0);
+            rect(100, 100, 200, 200);
+            fill(resultTextColor);
+            textSize(40);
+            text(resultText, 200, 150);
+        
+            //stats
+            fill(255, 255, 255);
+            textSize(20);
+            text("# Played: " + gamesPlayed, 180, 200);
+            text("Balance: " + totalBalance, 200, 230);
+        
+            //X
+            closeBoxBtn.draw();
+        }
+
+        
+    }
+    
+    //Buttons
+    hitBtn.draw();
+    standBtn.draw();
 }
 
 
@@ -573,6 +767,10 @@ mouseClicked = function() {
     standBtn.handleMouseClick();
     startGameBtn.handleMouseClick();
     closeBoxBtn.handleMouseClick();
+    
+    betBtn250.handleMouseClick();
+    betBtn500.handleMouseClick();
+    betBtn1000.handleMouseClick();
 };
 
 draw = function() {
@@ -584,72 +782,7 @@ draw = function() {
         betScreen();
         return;
     }
+    gameScreen();
     
-   // println("2");
-    background(92, 148, 74);
-    
-    
-    //rect or line?
-    rect(200, 0, 2, 400);
-    
-    //Text
-    fill(0, 0, 0);
-    textSize(30);
-    text("You", 80, 0);
-    text("Computer", 240, 0);
-    
-    //Current Value of cards
-    textSize(20);
-    text("Value: " + player.currentValue, 70, 40);
-    text("Value: " + computer.currentValue, 260, 40);
-    
-    //Cards
-    computer.displayCards(220);
-    player.displayCards(20);
-    
-    if (currScene === 3){
-        //display after so its drawn on top
-
-        //change labels
-        hitBtn.label = "End";
-        standBtn.label = "Play Again";
-        
-        //change functions
-        //end game
-        hitBtn.onClick = function(){
-            currScene = 0;
-        };
-        //play again
-        standBtn.onClick = function(){
-            //not setting back to 2, will run above code again, buttons wont change
-            resetGame();
-               
-            
-            
-        };
-        
-        
-        if(afterResultScreen === 1){
-            //Outcome
-            fill(0, 0, 0);
-            rect(100, 100, 200, 200);
-            fill(107, 255, 28);
-            text("You Won", 200, 150);
-        
-            //stats
-            fill(255, 255, 255);
-            textSize(20);
-            text("# Played: ", 150, 200);
-            text("Balance: ", 150, 230);
-        
-            //X
-            closeBoxBtn.draw();
-        }
-
-        
-    }
-    
-    //Buttons
-    hitBtn.draw();
-    standBtn.draw();
+   
 };
