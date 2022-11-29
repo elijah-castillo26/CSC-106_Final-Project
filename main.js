@@ -1,3 +1,6 @@
+
+
+
 //Anthony Bitmoji
 var drawBitmojiInitials = function (bitmojiX,bitmojiY,size,adjust) {
     
@@ -262,13 +265,15 @@ Button.prototype.draw = function() {
 };
 
 Button.prototype.isMouseInside = function() {
-    return mouseX > this.x &&
-           mouseX < (this.x + this.width) &&
-           mouseY > this.y &&
-           mouseY < (this.y + this.height);
+    //println("Click" + " X:" + this.x + " Y:" + this.y + " MX:" +mouseX +" MY:" + mouseY + " W:" + this.width + " H:" + this.height);
+    return mouseX > (this.x - this.height + 5) &&
+           mouseX < (this.x + this.width - 20) &&
+           mouseY > (this.y - this.height + 10) &&
+           mouseY < (this.y + this.height - 10);
 };
 
 Button.prototype.handleMouseClick = function() {
+
     if (this.isMouseInside()) {
         this.onClick();
     }
@@ -682,31 +687,8 @@ function betScreen(){
     betBtn1000.draw();
 }
 
-function gameScreen(){
-    // println("2");
-    background(92, 148, 74);
-    
-    
-    //rect or line?
-    rect(200, 0, 2, 400);
-    
-    //Text
-    fill(0, 0, 0);
-    textSize(30);
-    text("You", 80, 35);
-    text("Computer", 240, 35);
-    
-    //Current Value of cards
-    textSize(20);
-    text("Value: " + player.currentValue, 60, 60);
-    text("Value: " + computer.currentValue, 260, 60);
-    
-    //Cards
-    computer.displayCards(220);
-    player.displayCards(20);
-    
-    if (currScene === 3){
-        //display after so its drawn on top
+function gameEndScreen(){
+    //display after so its drawn on top
 
         //change labels
         hitBtn.label = "End";
@@ -745,6 +727,33 @@ function gameScreen(){
         }
 
         
+}
+
+function gameScreen(){
+    // println("2");
+    background(92, 148, 74);
+    
+    
+    //rect or line?
+    rect(200, 0, 2, 400);
+    
+    //Text
+    fill(0, 0, 0);
+    textSize(30);
+    text("You", 80, 35);
+    text("Computer", 240, 35);
+    
+    //Current Value of cards
+    textSize(20);
+    text("Value: " + player.currentValue, 60, 60);
+    text("Value: " + computer.currentValue, 260, 60);
+    
+    //Cards
+    computer.displayCards(220);
+    player.displayCards(20);
+    
+    if (currScene === 3){
+        gameEndScreen();
     }
     
     //Buttons
@@ -763,14 +772,28 @@ function gameScreen(){
 // 3: Reset Screen
 
 mouseClicked = function() {
-    hitBtn.handleMouseClick();
-    standBtn.handleMouseClick();
-    startGameBtn.handleMouseClick();
-    closeBoxBtn.handleMouseClick();
+
+    if(currScene === 0){
+
+        startGameBtn.handleMouseClick();
+    }
     
-    betBtn250.handleMouseClick();
-    betBtn500.handleMouseClick();
-    betBtn1000.handleMouseClick();
+    if(currScene === 2 || 3){
+ 
+        hitBtn.handleMouseClick();
+        standBtn.handleMouseClick();
+        closeBoxBtn.handleMouseClick();
+    }
+
+    
+    if (currScene === 1){
+
+        betBtn250.handleMouseClick();
+        betBtn500.handleMouseClick();
+        betBtn1000.handleMouseClick();
+    }
+    
+
 };
 
 draw = function() {
