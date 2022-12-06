@@ -166,12 +166,17 @@ function drawBitmoji(x, y, h){
 var currScene = 0;
 
 //Config
+    //Game Result
 var afterResultScreen = 1;
 var resultText = "";
 var resultTextColor = color(65, 235, 88);
-var totalBalance = 3500;
-var currentBet = 0;
 var gamesPlayed = 0;
+
+    //Betting
+var initalBalance = 3500;
+var totalBalance = initalBalance;
+var currentBet = 0;
+
 
 //Store Values for each Card Object
 var cardObj = {
@@ -397,10 +402,22 @@ var player = new Player();
 var computer = new Player();
 
 
+var closeBoxBtn = new Button({
+    x: 200,
+    y: 270,
+    width: 50,
+    height: 40,
+    label: "X",
+    color: color(237, 35, 35),
+    onClick: function() {
+       afterResultScreen = 0;
+    }
+});
+
+
 function handleGameResult(result){
     if(result === 1){
         //win
-        println("WIN");
         resultText = "You Won";
         resultTextColor = color(65, 235, 65);
         
@@ -410,15 +427,28 @@ function handleGameResult(result){
         
     } else if (result === 0){
         //loss
-         println("LOSS");
-        resultText = "You Lost";
-        resultTextColor = color(235, 23, 23);
+
         
-        //Subtract
-        totalBalance -= currentBet;
+        //Subtract, check if below 0
+        if(totalBalance - currentBet <= 0){
+            println("END");
+            //end
+            resultText = "Bankrupt";
+            resultTextColor = color(232, 39, 62);
+            totalBalance -= currentBet;
+            closeBoxBtn.onClick = function(){
+
+                currScene = 0;
+            };
+            
+        } else {
+            resultText = "You Lost";
+            resultTextColor = color(235, 23, 23);
+            totalBalance -= currentBet;
+        }
+        
     } else if (result === 2){
         //tie
-         println("TIE");
         resultText = "You Tied";
         resultTextColor = color(237, 228, 66);
         
@@ -475,7 +505,10 @@ function computerTurn(){
     //computer "AI"
     while(computer.currentValue < 17){
         println("Inside AI");
+        println("AI BEFORE: " + computer.currentValue);
         computer.drawNewCard(false);
+        println("AI AFTER: " + computer.currentValue);
+        
     }
     
     println("Start Win Check");
@@ -490,7 +523,12 @@ Player.prototype.checkBust = function(){
         this.bust = true;
         
         //players card puts them over 21
-        computerTurn();
+        if(player.currentValue > 21){
+            computerTurn();
+        } else if (computer.currentValue > 21){
+            comparePlayers();
+        }
+        
         
         
     }
@@ -557,6 +595,13 @@ function resetGame(){
     initGame();
     currScene = 2;
     afterResultScreen = 1;
+    
+    //if bankrupt, then this func changes, so reset
+    closeBoxBtn.onClick = function(){
+        afterResultScreen = 0;
+    };
+    
+    
 }
 
 
@@ -569,20 +614,14 @@ var startGameBtn = new Button({
     label: "Start",
     onClick: function() {
         currScene = 1;
+        //reset balance
+        totalBalance = initalBalance;
+        
+        
     }
 });
 
-var closeBoxBtn = new Button({
-    x: 200,
-    y: 270,
-    width: 50,
-    height: 40,
-    label: "X",
-    color: color(237, 35, 35),
-    onClick: function() {
-       afterResultScreen = 0;
-    }
-});
+
 
 //Betting
 
