@@ -340,27 +340,55 @@ Player.prototype.drawNewCard = function(f){
     var newC = new Card(f);
     this.currentCards.push(newC);
     
-    //dont add value if card is turned over
-    if(!f){
-        //add value of card, and check if bust
-        this.currentValue += this.addCardValue(newC);
-        this.checkBust();
+    //card is face down dont recount
+    if(f){
+        return;
     }
+    
+    var acesInArray = 0;
+    var totalRecount = 0;
+    
+    for(var i = 0; i < this.currentCards.length; i++){
+        //If there is an ace
+        if(this.currentCards[i].displayValue === "A"){
+            println("ACE ADD");
+            acesInArray++;
+        } else {
+            println("NON ACE ADD");
+            totalRecount += this.currentCards[i].value;
+            
+        }
+    }
+    
+    //println("Total Before: " + totalRecount + " Aces Count: " + acesInArray);
+    //add recount value to player obj
+    this.currentValue = totalRecount;
+    
+    //calcuate values of aces based on currentValue
+    if(acesInArray > 0){
+        println("INSIDE ACES + ");
+        for(var j = 0; j < acesInArray; j++){
+            
+            this.currentValue += this.addCardValue();
+        }
+    }
+
+    
+    this.checkBust();
+    
     
 };
 
-Player.prototype.addCardValue = function(card){
+Player.prototype.addCardValue = function(){
     //use differnt value for Ace depending on current value 
-    if(card.displayValue === "A" && ((this.currentValue + 11) > 21)){
-        println("1");
-        return card.value[0];
+    if((this.currentValue + 11) > 21){
+        println("1 Ace");
+        return 1;
             
-    } else if (card.displayValue === "A" ) {
-        println("11");
-        return card.value[1];
+    } else if ( (this.currentValue + 1) < 21) {
+        println("11 Ace");
+        return 11;
             
-    } else {
-        return card.value;
     }
 };
 
@@ -494,10 +522,10 @@ function computerTurn(){
     //turn over hidden card
     //since this is called everytime there is a bust or stand, only do this logic the first time.
     if(computer.currentCards[1].faceUp === true){
-        computer.currentCards[1].faceUp = false;
-        println(computer.addCardValue(computer.currentCards[1]));
-        computer.currentValue += computer.addCardValue(computer.currentCards[1]);
         
+        //remove flipped card and create new
+        computer.currentCards.splice(1, 1);
+         computer.drawNewCard(false);
     }
 
     
@@ -517,7 +545,7 @@ function computerTurn(){
 }
 
 Player.prototype.checkBust = function(){
-    //println("CHECK BUST " + this.currentValue);
+
     if(this.currentValue > 21){
         //println("BUST TRUE");
         this.bust = true;
@@ -633,7 +661,7 @@ function chooseBet(betValue){
 }
 var betBtn250 = new Button({
     x: 100,
-    y: 140,
+    y: 200,
     width: 70,
     height: 50,
     label: "$250",
@@ -645,7 +673,7 @@ var betBtn250 = new Button({
 
 var betBtn500 = new Button({
     x: 200,
-    y: 140,
+    y: 200,
     width: 70,
     height: 50,
     label: "$500",
@@ -657,7 +685,7 @@ var betBtn500 = new Button({
 
 var betBtn1000 = new Button({
     x: 300,
-    y: 140,
+    y: 200,
     width: 70,
     height: 50,
     label: "$1000",
@@ -675,7 +703,7 @@ var betBtn1000 = new Button({
 var brick_background = function(x, y, s){
     
     noFill();
-    stroke(0, 0, 0, 20);
+    stroke(0, 0, 0, 30);
     
     for(var i = 0; i < 600; i += s * 2 + 1)
     {
@@ -684,7 +712,8 @@ var brick_background = function(x, y, s){
 };
 
 function splashScreen(){
-        background(120, 120, 120);    for(var i = 0; i < 8; ++i)
+        background(120, 120, 120);    
+    for(var i = 0; i < 8; ++i)
     {
         brick_background(60, 0 + i * 120, 60);
     }
@@ -694,8 +723,8 @@ function splashScreen(){
         brick_background(0, 60 + i * 120, 60);
     }
     fill(255, 255, 255);
-    textSize(40);
-    text("Blackjack", 120, 50);
+    textSize(45);
+    text("Blackjack", 100, 50);
     textSize(15);
     text("Goal: Get as close to 21 without going over", 55, 85);
     
@@ -716,10 +745,25 @@ function splashScreen(){
 
 function betScreen(){
     background(120, 120, 120);
+    for(var i = 0; i < 8; ++i)
+    {
+        brick_background(60, 0 + i * 120, 60);
+    }
+    
+    for(var i = 0; i < 8; ++i)
+    {
+        brick_background(0, 60 + i * 120, 60);
+    }
     fill(255, 255, 255);
-    textSize(20);
-    text("Choose how much you want to bet", 50, 30);
-    text("Current Balance: $" + totalBalance, 100, 70);
+    textSize(21);
+    textFont(createFont("monospace"));
+    text("Choose how much you want to bet", 20, 80);
+    
+    textFont(createFont("fantasy"));
+    textSize(25);
+    text("Current Balance: $" + totalBalance, 70, 130);
+    
+    textFont(createFont("sans-serif"));
     
     betBtn250.draw();
     betBtn500.draw();
