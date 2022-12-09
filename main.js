@@ -351,10 +351,10 @@ Player.prototype.drawNewCard = function(f){
     for(var i = 0; i < this.currentCards.length; i++){
         //If there is an ace
         if(this.currentCards[i].displayValue === "A"){
-            println("ACE ADD");
+
             acesInArray++;
         } else {
-            println("NON ACE ADD");
+
             totalRecount += this.currentCards[i].value;
             
         }
@@ -366,7 +366,7 @@ Player.prototype.drawNewCard = function(f){
     
     //calcuate values of aces based on currentValue
     if(acesInArray > 0){
-        println("INSIDE ACES + ");
+
         for(var j = 0; j < acesInArray; j++){
             
             this.currentValue += this.addCardValue();
@@ -382,11 +382,11 @@ Player.prototype.drawNewCard = function(f){
 Player.prototype.addCardValue = function(){
     //use differnt value for Ace depending on current value 
     if((this.currentValue + 11) > 21){
-        println("1 Ace");
+
         return 1;
             
     } else if ( (this.currentValue + 1) < 21) {
-        println("11 Ace");
+
         return 11;
             
     }
@@ -459,7 +459,7 @@ function handleGameResult(result){
         
         //Subtract, check if below 0
         if(totalBalance - currentBet <= 0){
-            println("END");
+
             //end
             resultText = "Bankrupt";
             resultTextColor = color(232, 39, 62);
@@ -496,20 +496,20 @@ function comparePlayers(){
         
     } 
     else if(computer.currentValue === player.currentValue){
-        println("Tie Equal");
+
         handleGameResult(2);
     }
     else if (computer.bust && !player.bust){
-        println("Player Win  CB !PB");
+
         handleGameResult(1);
     } else if (player.bust && !computer.bust){
-        println("Computer Win PB !CB");
+
         handleGameResult(0);
     } else if (player.currentValue > computer.currentValue){
-        println("Player Win PV > CV");
+
         handleGameResult(1);
     } else if (player.currentValue < computer.currentValue){
-        println("Computer Win CV > PV");
+
         handleGameResult(0);
     }
     currScene = 3;
@@ -532,14 +532,12 @@ function computerTurn(){
     
     //computer "AI"
     while(computer.currentValue < 17){
-        println("Inside AI");
-        println("AI BEFORE: " + computer.currentValue);
+
         computer.drawNewCard(false);
-        println("AI AFTER: " + computer.currentValue);
+
         
     }
     
-    println("Start Win Check");
     comparePlayers();
     
 }
