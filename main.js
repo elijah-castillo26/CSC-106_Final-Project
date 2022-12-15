@@ -164,6 +164,7 @@ function drawBitmoji(x, y, h){
 // 2: Game Screen
 // 3: Reset Screen
 var currScene = 0;
+var difficultyLevel = 0;
 
 //Config
     //Game Result
@@ -173,7 +174,7 @@ var resultTextColor = color(65, 235, 88);
 var gamesPlayed = 0;
 
     //Betting
-var initalBalance = 3500;
+var initalBalance = 2500;
 var totalBalance = initalBalance;
 var currentBet = 0;
 
@@ -250,14 +251,14 @@ var Button = function(config) {
     this.height = config.height || 50;
     this.label = config.label || "Click";
     this.onClick = config.onClick || function() {};
-    this.color = config.color || color(0, 234, 255);
+    this.color = config.color || color(214, 64, 64);
 };
 
 Button.prototype.draw = function() {
         textAlign(CENTER, CENTER);
         strokeWeight(2.5);
         stroke(255);
-        fill(214, 64, 64);
+        fill(this.color);
         rectMode(CENTER);
         rect(this.x, this.y, this.width, this.height, 4);
         rectMode(CORNER);
@@ -270,7 +271,6 @@ Button.prototype.draw = function() {
 };
 
 Button.prototype.isMouseInside = function() {
-    //println("Click" + " X:" + this.x + " Y:" + this.y + " MX:" +mouseX +" MY:" + mouseY + " W:" + this.width + " H:" + this.height);
     return mouseX > (this.x - this.height + 5) &&
            mouseX < (this.x + this.width - 20) &&
            mouseY > (this.y - this.height + 10) &&
@@ -351,7 +351,6 @@ Player.prototype.drawNewCard = function(f){
     for(var i = 0; i < this.currentCards.length; i++){
         //If there is an ace
         if(this.currentCards[i].displayValue === "A"){
-
             acesInArray++;
         } else {
 
@@ -366,7 +365,6 @@ Player.prototype.drawNewCard = function(f){
     
     //calcuate values of aces based on currentValue
     if(acesInArray > 0){
-
         for(var j = 0; j < acesInArray; j++){
             
             this.currentValue += this.addCardValue();
@@ -382,11 +380,9 @@ Player.prototype.drawNewCard = function(f){
 Player.prototype.addCardValue = function(){
     //use differnt value for Ace depending on current value 
     if((this.currentValue + 11) > 21){
-
         return 1;
             
     } else if ( (this.currentValue + 1) < 21) {
-
         return 11;
             
     }
@@ -459,7 +455,6 @@ function handleGameResult(result){
         
         //Subtract, check if below 0
         if(totalBalance - currentBet <= 0){
-
             //end
             resultText = "Bankrupt";
             resultTextColor = color(232, 39, 62);
@@ -488,7 +483,6 @@ function handleGameResult(result){
 function comparePlayers(){
     
     //check game state, find winner
-    //println("COMPARE");
 
     if (computer.bust  && player.bust){
         //println("Tie Bust Bust");
@@ -496,20 +490,20 @@ function comparePlayers(){
         
     } 
     else if(computer.currentValue === player.currentValue){
-
+        //println("Tie Equal");
         handleGameResult(2);
     }
     else if (computer.bust && !player.bust){
-
+        //println("Player Win  CB !PB");
         handleGameResult(1);
     } else if (player.bust && !computer.bust){
-
+        //println("Computer Win PB !CB");
         handleGameResult(0);
     } else if (player.currentValue > computer.currentValue){
-
+        //println("Player Win PV > CV");
         handleGameResult(1);
     } else if (player.currentValue < computer.currentValue){
-
+        //println("Computer Win CV > PV");
         handleGameResult(0);
     }
     currScene = 3;
@@ -525,19 +519,26 @@ function computerTurn(){
         
         //remove flipped card and create new
         computer.currentCards.splice(1, 1);
-         computer.drawNewCard(false);
+        computer.drawNewCard(false);
     }
 
+
+    //depending on the difficulty, choose what value the computer stop drawing cards
+    var stopDrawCardValue = 0;
     
+    if(difficultyLevel === 0){
+        stopDrawCardValue = 13;
+    } else if (difficultyLevel === 1){
+        stopDrawCardValue = 15;
+    } else if (difficultyLevel === 2){
+        stopDrawCardValue = 17;
+    }
     
     //computer "AI"
-    while(computer.currentValue < 17){
-
+    while(computer.currentValue < stopDrawCardValue){
         computer.drawNewCard(false);
-
-        
     }
-    
+
     comparePlayers();
     
 }
@@ -545,7 +546,6 @@ function computerTurn(){
 Player.prototype.checkBust = function(){
 
     if(this.currentValue > 21){
-        //println("BUST TRUE");
         this.bust = true;
         
         //players card puts them over 21
@@ -639,10 +639,10 @@ var startGameBtn = new Button({
     height: 50,
     label: "Start",
     onClick: function() {
-        currScene = 1;
+        currScene = 4;
+        
         //reset balance
         totalBalance = initalBalance;
-        
         
     }
 });
@@ -663,7 +663,6 @@ var betBtn250 = new Button({
     width: 70,
     height: 50,
     label: "$250",
-    color: color(123, 209, 235),
     onClick: function() {
         chooseBet(250);
     }
@@ -675,7 +674,6 @@ var betBtn500 = new Button({
     width: 70,
     height: 50,
     label: "$500",
-    color: color(123, 209, 235),
     onClick: function() {
         chooseBet(500);
     }
@@ -687,9 +685,53 @@ var betBtn1000 = new Button({
     width: 70,
     height: 50,
     label: "$1000",
-    color: color(123, 209, 235),
     onClick: function() {
         chooseBet(1000);
+    }
+});
+
+//Difficulty Btns
+// 0 - Easy
+// 1 - Medium
+// 2 - Hard
+
+function chooseDifficulty(diff){
+    difficultyLevel = diff;
+    currScene = 1;
+}
+var easyDifficultyBtn = new Button({
+    x: 80,
+    y: 130,
+    width: 100,
+    height: 50,
+    label: "Easy",
+    color: color(65, 224, 94),
+    onClick: function() {
+        
+        chooseDifficulty(0);
+    }
+});
+var mediumDifficultyBtn = new Button({
+    x: 200,
+    y: 130,
+    width: 100,
+    height: 50,
+    label: "Medium",
+    color: color(212, 207, 68),
+    onClick: function() {
+        chooseDifficulty(1);
+    }
+});
+
+var hardDifficultyBtn = new Button({
+    x: 320,
+    y: 130,
+    width: 100,
+    height: 50,
+    label: "Hard",
+    color: color(227, 57, 57),
+    onClick: function() {
+        chooseDifficulty(2);
     }
 });
 
@@ -768,6 +810,28 @@ function betScreen(){
     betBtn1000.draw();
 }
 
+function difficultyScreen(){
+        background(120, 120, 120);
+    for(var i = 0; i < 8; ++i)
+    {
+        brick_background(60, 0 + i * 120, 60);
+    }
+    
+    for(var i = 0; i < 8; ++i)
+    {
+        brick_background(0, 60 + i * 120, 60);
+    }
+    fill(255, 255, 255);
+    textSize(30);
+    textFont(createFont("monospace"));
+    text("Choose Your Difficulty", 20, 60);
+
+    
+    easyDifficultyBtn.draw();
+    mediumDifficultyBtn.draw();
+    hardDifficultyBtn.draw();
+}
+
 function gameEndScreen(){
     //display after so its drawn on top
 
@@ -811,7 +875,6 @@ function gameEndScreen(){
 }
 
 function gameScreen(){
-    // println("2");
     background(92, 148, 74);
     
     
@@ -851,6 +914,7 @@ function gameScreen(){
 // 1: Bet Screen
 // 2: Game Screen
 // 3: Reset Screen
+// 4: Choose Difficulty
 
 mouseClicked = function() {
 
@@ -865,6 +929,12 @@ mouseClicked = function() {
         standBtn.handleMouseClick();
         closeBoxBtn.handleMouseClick();
     }
+    
+    if(currScene === 4){
+        easyDifficultyBtn.handleMouseClick();
+        mediumDifficultyBtn.handleMouseClick();
+        hardDifficultyBtn.handleMouseClick();
+    }
 
     
     if (currScene === 1){
@@ -874,6 +944,7 @@ mouseClicked = function() {
         betBtn1000.handleMouseClick();
     }
     
+    
 
 };
 
@@ -882,11 +953,21 @@ draw = function() {
     if(currScene === 0){
         splashScreen();
         return;
-    } else if (currScene === 1){
+    }
+    else if (currScene === 1){
         betScreen();
         return;
     }
-    gameScreen();
+    else if (currScene === 4){
+        difficultyScreen();
+        return;
+    }
+    else if (currScene === 2 || 3){
+        gameScreen();
+        return;
+    }
+
+   
     
    
 };
